@@ -6,8 +6,12 @@
     - mkdir -p ~/.vim/undo-dir
 
 # Zsh
-- link:
+- shell:
+    - command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+      stdout: true
+
+- link: # Runs after install script to override default .zshrc
     ~/.zshrc: 
         path: configs/zsh/.zshrc
-        if: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+        force: true
 

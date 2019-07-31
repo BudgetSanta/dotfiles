@@ -52,8 +52,6 @@ DISABLE_AUTO_TITLE="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    zsh-autosuggestions
-    jira
 )
 
 source $ZSH/oh-my-zsh.sh
