@@ -1,5 +1,13 @@
 # Vim
 - link:
     ~/.vimrc: configs/vim/.vimrc
+
 - shell:
     - mkdir -p ~/.vim/undo-dir
+
+# Zsh
+- link:
+    ~/.zshrc: 
+        path: configs/zsh/.zshrc
+        if: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
