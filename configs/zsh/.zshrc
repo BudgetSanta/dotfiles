@@ -87,8 +87,7 @@ source $ZSH/oh-my-zsh.sh
 alias ranger="ranger-cd"
 alias ra="ranger"
 
-# To be reenabled when aliases apart of dotbot install
-# source $HOME/.aliases
+source $HOME/.aliases
 
 # Ignores error message when nothing found
 # i.e. lsl function won't complain when 
