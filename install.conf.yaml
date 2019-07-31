@@ -1,0 +1,5 @@
+# Vim
+- link:
+    ~/.vimrc: configs/vim/.vimrc
+- shell:
+    - mkdir -p ~/.vim/undo-dir
