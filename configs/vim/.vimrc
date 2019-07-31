@@ -71,4 +71,6 @@ set updatetime=100
 " Persistant Folds
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
-execute pathogen#infect()
+
+"Reenable when pathogen in dotbot install script
+"execute pathogen#infect()
