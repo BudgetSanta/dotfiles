@@ -89,18 +89,17 @@ source $ZSH/oh-my-zsh.sh
 alias ranger="ranger-cd"
 alias ra="ranger"
 
-source $HOME/.aliases
-source $HOME/.funcs
+# To be reenabled when aliases apart of dotbot install
+# source $HOME/.aliases
 
 # Ignores error message when nothing found
 # i.e. lsl function won't complain when 
 # a specific file extension isn't found
 setopt +o nomatch
+
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
 export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"
-
-umask 007
 
 export TERM=xterm-256color
 
