@@ -1,14 +1,14 @@
 - link:
     ~/.aliases: configs/bash/.aliases
 
-# Vim
+## Vim ##
 - link:
     ~/.vimrc: configs/vim/.vimrc
 
 - shell:
     - mkdir -p ~/.vim/undo-dir
 
-# Zsh
+## Zsh ##
 - shell:
     - command: which zsh || echo "ZSH Not found, please install" && exit 1
     - command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
@@ -18,4 +18,3 @@
     ~/.zshrc: 
         path: configs/zsh/.zshrc
         force: true
-
