@@ -2,14 +2,18 @@
     ~/.aliases: configs/bash/.aliases
     ~/.ssh/config: configs/ssh/config
 
-# Vim
+## Vim ##
 - link:
     ~/.vimrc: configs/vim/.vimrc
 
 - shell:
     - mkdir -p ~/.vim/undo-dir
 
-# Zsh
+## Tmux ##
+- link:
+    ~/.tmux.conf: configs/tmux/.tmux.conf
+
+## Zsh ##
 - shell:
     - command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
       stdout: true
