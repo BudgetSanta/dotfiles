@@ -88,6 +88,7 @@ alias ranger="ranger-cd"
 alias ra="ranger"
 
 source $HOME/.aliases
+export PATH=~/.dotfiles/bin:${PATH}
 
 # Ignores error message when nothing found
 # i.e. lsl function won't complain when 

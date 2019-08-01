@@ -1,0 +1,13 @@
+Host *
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/github_rsa
+    IdentityFile ~/.ssh/bitbucket_rsa
+
+Host home
+    User pi
+    HostName 10.0.0.2
+
+Host jira
+    User ec2-user
+    HostName 13.236.160.21
+    IdentityFile ~/.ssh/aws-is-jira.pem
