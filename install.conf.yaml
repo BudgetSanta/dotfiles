@@ -1,6 +1,6 @@
 - link:
     ~/.aliases: configs/bash/.aliases
-    ~/.aliases: configs/ssh/config
+    ~/.ssh/config: configs/ssh/config
 
 # Vim
 - link:
