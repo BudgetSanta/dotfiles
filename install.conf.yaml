@@ -5,9 +5,9 @@
 ## Vim ##
 - link:
     ~/.vimrc: configs/vim/.vimrc
-
 - shell:
     - mkdir -p ~/.vim/undo-dir
+    - mkdir -p ~/.vim/autoload ~/.vim/bundle && curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
 ## Tmux ##
 - link:

@@ -72,5 +72,4 @@ set updatetime=100
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
 
-"Reenable when pathogen in dotbot install script
-"execute pathogen#infect()
+execute pathogen#infect()
