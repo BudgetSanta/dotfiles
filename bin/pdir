@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Searching ${PWD##*/} for \"$1\"...."
+find . -type d | grep $1

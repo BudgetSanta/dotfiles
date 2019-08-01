@@ -1,0 +1,24 @@
+#!/bin/bash
+
+printf "\n"
+# Text Files
+ls_type txt "TXT: TEXT FILES"
+ls_type csv "CSV: CSV FILES"
+ls_type md "MD: MARKDOWN FILES"
+ls_type db "DB: DATABASE FILES"
+ls_type log "LOG: LOG FILES"
+
+# Languages
+ls_type py "PY: PYTHON FILES"
+ls_type sh "SHELL SCRIPTS"
+ls_type pl "PERL SCRIPTS"
+ls_type cs "C# FILES"
+ls_type html "HTML: HTML FILES"
+ls_type h "C: HEADER FILES"
+ls_type o "C: OUTPUT FILES"
+ls_type c "C: C FILES"
+
+# No Extensions
+ls_type "*" "NO EXTENSION"
+
+printf "\n"

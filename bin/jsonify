@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ "$#" -ne 1 ]]; then
+    echo "USAGE: jsonify FILE" 1>&2
+    exit 1
+else
+    python -m json.tool "$1"
+fi

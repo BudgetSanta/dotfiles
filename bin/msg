@@ -1,0 +1,20 @@
+#!/bin/bash
+
+which mutt || echo "Mutt not installed" && exit 1
+
+email="steiner.jared1996@gmail.com"
+if [ $# -lt 2 ]; then
+    printf "Usage: msg \"SUBJECT\" \"MESSAGE\" [-a FILE_TO_ATTACH]\n"
+fi
+
+echo $2 > tmpMsg.txt
+
+if [ $# -eq 4 ]; then
+    file=$4
+    mutt -s $1 $email -a $file < tmpMsg.txt
+fi 
+if [ $# -eq 2 ]; then
+    mutt -s $1 $email < tmpMsg.txt
+fi
+
+rm tmpMsg.txt
