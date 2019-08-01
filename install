@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # TODO: REMOVE THIS LINE AFTER #15
-which zsh || echo "ZSH Not installed. Install ZSH and re-run" && exit 1
+which zsh 2> /dev/null || (( echo "ZSH Not installed. Install ZSH and re-run" && exit 1 ))
 
 set -e
 
