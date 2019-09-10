@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Prepend Issue Key
+ISSUE_KEY=$(git branch 2>/dev/null| grep -e "^*"| sed -E "s/^\* ([A-Z]{2,}-[0-9]+).*$/\1/")
+echo "$ISSUE_KEY $(cat $1)" > $1
