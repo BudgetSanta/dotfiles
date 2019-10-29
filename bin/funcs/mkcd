@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkcd() {
+    test -e "$1" && if ! [[ -d "$1" ]]; then
+        >&2 echo "ERROR: File exists and is not a directory"
+        return 1
+    fi
+    
+    mkdir -p "$1"
+    cd "$1"
+}

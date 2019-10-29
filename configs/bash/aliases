@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Colours for Echos L=Light, D=Dark, B=Bold
 NC='\033[0m' # No Color
 WHITE='\033[0;37m'
@@ -23,8 +25,8 @@ alias bp=bpython
 alias py=python3    
 
 # Specific locations
-alias dot="cd ~/.dotfiles"
-alias funcs="cd ~/.dotfiles/term/funcs"
+alias dot="cd $DOTFILES"
+alias funcs="cd $DOTFILES/bin"
 
 
 #Git
