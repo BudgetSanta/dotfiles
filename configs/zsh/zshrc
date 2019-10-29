@@ -1,4 +1,4 @@
-ZSH_THEME="ys"
+ZSH_THEME="blinks"
 DISABLE_AUTO_TITLE="true"   # Disables auto setting of the terminal title
 
 ## Plugin Dir: ~/.oh-my-zsh/custom/plugins
