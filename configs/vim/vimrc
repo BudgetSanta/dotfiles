@@ -14,7 +14,7 @@
 execute pathogen#infect()
 set nocompatible            " Removeds vi backwards compatability
 
-" Formatting
+" Editor Formatting
 syntax enable				" Enable syntax highlighting
 set tabstop=4               " Visual spaces per tab
 set shiftwidth=4            " Spaces to use per indent
@@ -22,40 +22,39 @@ set softtabstop=4           " Spaces per tab in edit
 set expandtab               " Tabs expand to spaces
 set smarttab                " Use shiftwidth for indents instead of tabstop
 filetype indent on          " Load filetype specific indentation settings
-
-" Config
-set encoding=utf-8
-set scrolloff=15            " Scroll Offset keeps n lines of context around row
 set autoindent
 set smartindent
-set showcmd                 " Display incomplete commands
+
+" UI Settings
+set scrolloff=15            " Scroll Offset keeps n lines of context around row
 set showmode                " Show current vim mode
-set autoread                " Reload files if changes detected (ie git)
+set relativenumber          " Show relative linenumbers
+set cursorline				" Underline cursor line
+set cursorcolumn            " Highlight cursor column
+set colorcolumn=80          " Colour a column
+set ruler                   " Shows column, row
+
+" Commands Config
+set showcmd                 " Display incomplete commands
 set wildmenu                " Show auto complete menu options above command line
 set wildmode=list:longest
 set wildignorecase          " Ignore case on command autocompletion
-set cursorline
-set cursorcolumn            " highlights the cursor column
-set colorcolumn=80          " colours the 80th column
+
+" Config
+set encoding=utf-8
+set autoread                " Reload files if changes detected (ie. git)
 set ttyfast
-set ruler                   " Shows column, row
+set updatetime=100          " Update Time for screen
 set backspace=indent,eol,start
 set laststatus=2
-set relativenumber          " Show relative linenumbers
 set undodir=~/.vim/undo-dir
 set undofile
-set lazyredraw              " redraw only when needed
-set mouse=a                 " enables mouse in all modes
-" Persistant Folds
-autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview
-set updatetime=100          " Update Time for screen
+set lazyredraw              " Redraw only when needed
+set mouse=a                 " Enable mouse in all modes
+au FocusLost * :wa			" Autosave on lost focus
 
-" Remappings
-let mapleader = ","
-"" Treats all special characters as special
-nnoremap / /\v
-vnoremap / /\v
+
+" Search
 set ignorecase              " Case Sensitive search when at least one capital
 set smartcase               " Ignore case when searching with only lowercase
 set gdefault                " Substitute globally by default (s///g)
@@ -63,7 +62,19 @@ set incsearch               " Show live search matches
 set hlsearch                " Highlight all matches
 set showmatch               " Highlight matching brackets
 
-" Alt-Enter autocomplete (May need iTerm>Profiles>Keys Left Opt=Esc+)
+" Remappings (Comments above as they affect mappings on the same line)
+" noremap prefix dictates mode its available in.
+"	inoremap - *insert* mode
+" 	nnoremap - *normal* mode
+" 	vnoremap - *visual* mode
+
+"" Key for starting more commands
+let mapleader = ","
+"" When searching, treats all special characters as special
+nnoremap / /\v
+vnoremap / /\v
+
+"" Alt-Enter autocomplete (May need iTerm > Profiles > Keys 'Left Opt'=Esc+)
 execute "set <a-cr>=\<esc>\<cr>"
 inoremap <a-cr> <C-n>
 
@@ -78,36 +89,40 @@ vnoremap <tab> %
 set list
 set listchars=tab:\ \ ,eol:\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
-"" Disable arrow keys in normal mode
+"" Disable arrow keys in normal mode (Helps to enforce hjkl movement)
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> <nop>
-nnoremap <right> <nop>
+nnoremap <right> <nop>		
 "" Set kj to Escape key in insert mode
 inoremap kj <ESC>
 
-" Remap j/k to move normally even with wrapped lines
+"" Remap j/k to move normally even with wrapped lines
 nnoremap j gj
 nnoremap k gk
 
-" Semi colon acts as colon for quicker commands
+"" Semi colon acts as colon for quicker commands
 nnoremap ; :
 
-" Autosave on lost focus
-au FocusLost * :wa
-
-"" Leader Remappings
 """ Strip trailing whitespace
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
+
 """ Open Vimrc file in a vertical split window
 nnoremap <leader>ev <C-w><C-v><C-l>:e $MYVIMRC<cr>
+
 """ New Right vertical split
 nnoremap <leader>w <C-w>v<C-w>l
+
 """ Move around splits
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+
+" Other Config
+"" Persistant Folds
+autocmd BufWinLeave *.* mkview
+autocmd BufWinEnter *.* silent loadview
 
 " PLUGINS
 "" Nerd Tree Map
