@@ -50,6 +50,7 @@ set laststatus=2
 set undodir=~/.vim/undo-dir
 set undofile
 set lazyredraw              " Redraw only when needed
+set synmaxcol=300			" Only highlight upto 300th column
 set mouse=a                 " Enable mouse in all modes
 au FocusLost * :wa			" Autosave on lost focus
 
@@ -93,7 +94,7 @@ set listchars=tab:\ \ ,eol:\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> <nop>
-nnoremap <right> <nop>		
+nnoremap <right> <nop>
 "" Set kj to Escape key in insert mode
 inoremap kj <ESC>
 
