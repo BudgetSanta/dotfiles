@@ -56,9 +56,9 @@ au FocusLost * :wa			" Autosave on lost focus
 
 
 " Search
-set ignorecase              " Case Sensitive search when at least one capital
-set smartcase               " Ignore case when searching with only lowercase
-set gdefault                " Substitute globally by default (s///g)
+set ignorecase              " Ignore case when searching
+set smartcase               " Overrides *ignorecase* if uppercase letters present
+set gdefault                " Substitute globally by default (%s/FIND/REPLACE/g)
 set incsearch               " Show live search matches
 set hlsearch                " Highlight all matches
 set showmatch               " Highlight matching brackets
