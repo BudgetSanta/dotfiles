@@ -52,4 +52,14 @@ yabai -m config mouse_action2                resize
     #yabai -m config status_bar_space_icon        ⭐️
     #yabai -m config status_bar_clock_icon        ⌚︎
 
+## Float system preferences 
+yabai -m rule --add label=system_pref_float \
+  app='System Preferences' \
+  manage=off
+
+## Float pritunl
+yabai -m rule --add label=pritunl_float \
+  app='Pritunl' \
+  manage=off
+
 echo "yabai configuration loaded.."
