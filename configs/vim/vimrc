@@ -29,6 +29,7 @@ set smartindent
 set scrolloff=15            " Scroll Offset keeps n lines of context around row
 set showmode                " Show current vim mode
 set relativenumber          " Show relative linenumbers
+set number					" Fix current line number
 set cursorline				" Underline cursor line
 set cursorcolumn            " Highlight cursor column
 set colorcolumn=80          " Colour a column
