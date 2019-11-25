@@ -6,9 +6,9 @@ if [[ $# -eq 0 ]]; then
 
     tmux new-session -A -s "$host"
 
-elif [[ $# -eq 1 && $1 == "ls" ]]; then
+elif [[ $# -eq 1 ]]; then
 
-    if [[ $1 = "ls" ]]; then
+    if [[ $1 == "ls" ]]; then
         tmux ls
     else
         tmux new-session -A -s "$1"
