@@ -30,8 +30,10 @@ set scrolloff=5             " Scroll Offset keeps n lines of context around row
 set showmode                " Show current vim mode
 set relativenumber          " Show relative linenumbers
 set number					" Fix current line number
-set cursorline				" Underline cursor line
-set cursorcolumn            " Highlight cursor column
+"set cursorline				 " Underline cursor line
+set nocursorline			" Remove Underline cursor line
+"set cursorcolumn            " Highlight cursor column
+set nocursorcolumn          " Remove Highlight cursor column
 set colorcolumn=80          " Colour a column
 set ruler                   " Shows column, row
 
@@ -104,7 +106,7 @@ nnoremap j gj
 nnoremap k gk
 
 "" Semi colon acts as colon for quicker commands
-nnoremap ; :
+"nnoremap ; :
 
 """ Strip trailing whitespace
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
