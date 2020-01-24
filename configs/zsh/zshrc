@@ -23,6 +23,9 @@ for func in $DOTFILES/bin/funcs/*; do
     source $func
 done
 
+# Env Vars
+test -f ~/.dev && source ~/.dev
+
 ## Linux Brew
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
