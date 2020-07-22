@@ -1,4 +1,4 @@
-ZSH_THEME="blinks"
+ZSH_THEME="ys"
 DISABLE_AUTO_TITLE="true"   # Disables auto setting of the terminal title
 
 ## Plugin Dir: ~/.oh-my-zsh/custom/plugins
@@ -13,15 +13,17 @@ export TERM=xterm-256color
 
 #---------- DOESN'T NEED TO CHANGE ----------#
 
+setopt +o nomatch   # Removes "no matches found" for failing globs
+
 ## Vars
 export DOTFILES="$HOME/.dotfiles"
 
 ## Personal Functions and Aliases
-source $HOME/.aliases
 export PATH="$DOTFILES/bin:$PATH"
 for func in $DOTFILES/bin/funcs/*; do
     source $func
 done
+source $HOME/.aliases
 
 # Env Vars
 test -f ~/.dev && source ~/.dev

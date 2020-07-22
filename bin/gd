@@ -1,0 +1,4 @@
+#!/bin/bash
+
+test -f *.sln && dotnet format
+git diff $1
