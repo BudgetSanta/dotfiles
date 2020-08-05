@@ -1,3 +1,7 @@
+## Pre Installation Setup
+- shell:
+    - command: mkdir -p ~/.ssh
+
 - link:
     ~/.aliases: configs/bash/.aliases
     ~/.ssh/config: configs/ssh/config
