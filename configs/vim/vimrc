@@ -1,0 +1,137 @@
+
+"  ██▒   █▓ ██▓ ███▄ ▄███▓ ██▀███   ▄████▄
+" ▓██░   █▒▓██▒▓██▒▀█▀ ██▒▓██ ▒ ██▒▒██▀ ▀█
+"  ▓██  █▒░▒██▒▓██    ▓██░▓██ ░▄█ ▒▒▓█    ▄
+"   ▒██ █░░░██░▒██    ▒██ ▒██▀▀█▄  ▒▓▓▄ ▄██▒
+"    ▒▀█░  ░██░▒██▒   ░██▒░██▓ ▒██▒▒ ▓███▀ ░
+"    ░ ▐░  ░▓  ░ ▒░   ░  ░░ ▒▓ ░▒▓░░ ░▒ ▒  ░
+"    ░ ░░   ▒ ░░  ░      ░  ░▒ ░ ▒░  ░  ▒
+"      ░░   ▒ ░░      ░     ░░   ░ ░
+"       ░   ░         ░      ░     ░ ░
+"      ░                           ░
+
+
+execute pathogen#infect()
+set nocompatible            " Removeds vi backwards compatability
+
+" Editor Formatting
+syntax enable				" Enable syntax highlighting
+set tabstop=4               " Visual spaces per tab
+set shiftwidth=4            " Spaces to use per indent
+set softtabstop=4           " Spaces per tab in edit
+set expandtab               " Tabs expand to spaces
+set smarttab                " Use shiftwidth for indents instead of tabstop
+filetype indent on          " Load filetype specific indentation settings
+set autoindent
+set smartindent
+
+" UI Settings
+set scrolloff=5             " Scroll Offset keeps n lines of context around row
+set showmode                " Show current vim mode
+set relativenumber          " Show relative linenumbers
+set number					" Fix current line number
+"set cursorline				 " Underline cursor line
+set nocursorline			" Remove Underline cursor line
+"set cursorcolumn            " Highlight cursor column
+set nocursorcolumn          " Remove Highlight cursor column
+set colorcolumn=80          " Colour a column
+set ruler                   " Shows column, row
+
+" Commands Config
+set showcmd                 " Display incomplete commands
+set wildmenu                " Show auto complete menu options above command line
+set wildmode=list:longest
+set wildignorecase          " Ignore case on command autocompletion
+
+" Config
+set encoding=utf-8
+set autoread                " Reload files if changes detected (ie. git)
+set ttyfast
+set updatetime=100          " Update Time for screen
+set backspace=indent,eol,start
+set laststatus=2
+set undodir=~/.vim/undo-dir
+set undofile
+set lazyredraw              " Redraw only when needed
+set synmaxcol=300			" Only highlight upto 300th column
+set mouse=a                 " Enable mouse in all modes
+au FocusLost * :wa			" Autosave on lost focus
+
+
+" Search
+set ignorecase              " Ignore case when searching
+set smartcase               " Overrides *ignorecase* if uppercase letters present
+set gdefault                " Substitute globally by default (%s/FIND/REPLACE/g)
+set incsearch               " Show live search matches
+set hlsearch                " Highlight all matches
+set showmatch               " Highlight matching brackets
+
+" Remappings (Comments above as they affect mappings on the same line)
+" noremap prefix dictates mode its available in.
+"	inoremap - *insert* mode
+" 	nnoremap - *normal* mode
+" 	vnoremap - *visual* mode
+
+"" Key for starting more commands
+let mapleader = ","
+"" When searching, treats all special characters as special
+nnoremap / /\v
+vnoremap / /\v
+
+"" Alt-Enter autocomplete (May need iTerm > Profiles > Keys 'Left Opt'=Esc+)
+execute "set <a-cr>=\<esc>\<cr>"
+inoremap <a-cr> <C-n>
+
+"" <leader><space> to clear search buffer
+nnoremap <leader><space> :noh<cr>
+
+"" Tab moves between brackets
+nnoremap <tab> %
+vnoremap <tab> %
+
+""" Invisible Characters
+set list
+set listchars=tab:\ \ ,eol:\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+
+"" Disable arrow keys in normal mode (Helps to enforce hjkl movement)
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+"" Set kj to Escape key in insert mode
+inoremap kj <ESC>
+
+"" Remap j/k to move normally even with wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+"" Semi colon acts as colon for quicker commands
+"nnoremap ; :
+
+""" Strip trailing whitespace
+nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
+
+""" Open Vimrc file in a vertical split window
+nnoremap <leader>ev <C-w><C-v><C-l>:e $MYVIMRC<cr>
+
+""" New Right vertical split
+nnoremap <leader>w <C-w>v<C-w>l
+
+""" Move around splits
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Other Config
+"" Persistant Folds
+autocmd BufWinLeave *.* mkview
+autocmd BufWinEnter *.* silent loadview
+
+" PLUGINS
+"" Nerd Tree Map
+map <C-n> :NERDTreeToggle<CR>
+""" Close vim if last window is Nerd Tree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+""" Show hidden files
+let NERDTreeShowHidden=1

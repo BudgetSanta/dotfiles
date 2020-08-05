@@ -9,5 +9,5 @@ Host home
 
 Host jira
     User ec2-user
-    HostName 13.236.160.21
+    HostName origin-jira.ansarada.com
     IdentityFile ~/.ssh/aws-is-jira.pem

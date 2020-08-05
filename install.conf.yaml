@@ -2,29 +2,38 @@
 - shell:
     - command: mkdir -p ~/.ssh
 
+## General ##
 - link:
-    ~/.aliases: configs/bash/.aliases
+    ~/.aliases: configs/bash/aliases
     ~/.ssh/config: configs/ssh/config
+
 
 ## Vim ##
 - link:
-    ~/.vimrc: configs/vim/.vimrc
+    ~/.vimrc: configs/vim/vimrc
 - shell:
     - mkdir -p ~/.vim/undo-dir
     - mkdir -p ~/.vim/autoload ~/.vim/bundle && curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+
+## Window Management (Yabai/skhd) ##
+- link:
+    ~/.yabairc: configs/yabai/yabairc
+    ~/.skhdrc: configs/skhd/skhdrc
+
 
 ## Tmux ##
 - link:
     ~/.tmux.conf: configs/tmux/.tmux.conf
 
+
 ## Zsh ##
 - shell:
     - command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
       stdout: true
-
 - link: # Runs after install script to override default .zshrc
     ~/.zshrc: 
-        path: configs/zsh/.zshrc
+        path: configs/zsh/zshrc
         force: true
 - shell:
     - command: git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting

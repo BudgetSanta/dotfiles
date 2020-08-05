@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    _error "Usage: $0 ( -s | <image.extension> )"
+fi
+
+LOC="$HOME/Pictures/Screenshots"     # Default image location
+FILENAME_PREFIX="Screen Shot"   # Filename Prefix
+
+filename=$(ls $LOC| grep "$FILENAME_PREFIX"| tail -1)
+
+sips -Z 1000 "$LOC/$filename" -o "$LOC/resized_$filename"

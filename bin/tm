@@ -3,32 +3,19 @@
 host=$(hostname | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')
 
 if [[ $# -eq 0 ]]; then
-    if [[ $(tmux ls 2> /dev/null | grep "^$host" | wc -l) -ge 1 ]]; then
-        tmux attach -t $host
-    else
-        tmux new-session -s $host
-    fi
-elif [[ $# -ge 1 ]]; then
-    alreadysession=$(tmux ls 2> /dev/null | grep "$1" | wc -l)
+
+    tmux new-session -A -s "$host"
+
+elif [[ $# -eq 1 ]]; then
+
     if [[ $1 == "ls" ]]; then
         tmux ls
-    elif [[ $alreadysession -eq 1 ]]; then
-        tmux attach -t $1
-
-    elif [[ $# -eq 1 ]]; then
-        if [[ $(cs 2> /dev/null | grep "$1" | wc -l) -ge 1 ]]; then
-            cs $1 1> /dev/null && tmux new-session -s $1_$host
-        else
-            tmux new-session -s $1_$host
-        fi
-
-    elif [[ $# -eq 2 ]]; then
-        if [[ $(cs 2> /dev/null | grep "$1" | wc -l) -ge 1 ]]; then
-            cs $1 $2 1> /dev/null && tmux new-session -s $1_$host
-        else
-            tmux new-session -s $1_$host
-        fi
     else
-        echo "USAGE: tmux [NAME/CLASS_CODE] [WEEK/ASS]" 
+        tmux new-session -A -s "$1"
     fi
+
+else
+
+    echo >&2 "Usage: $(basename $0) [ls | session-name]"
+
 fi
