@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Interactively brings up commits to
+# 	a branch so they may be selectively
+#		modified/removed
+git rebase -i $(git-branch-root)

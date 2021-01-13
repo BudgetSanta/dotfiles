@@ -2,11 +2,13 @@
 
 # File Existance check
 if ! [[ -f $1 ]]; then
-    _die "File \"$1\" not found!"
+    echo "File \"$1\" not found!"
+    exit 1
 
 # Arg Check
 elif [[ $# -eq 1 ]]; then
-    _error "Usage: $0 source_file start_line [end_line]"
+    echo "Usage: $0 source_file start_line [end_line]"
+    exit 1
 
 # Single line extraction
 elif [[ $# -eq 2 ]]; then
@@ -14,7 +16,7 @@ elif [[ $# -eq 2 ]]; then
 
 # Section boundaries check
 elif [[ $2 -gt $3 ]]; then
-    _die "start_line greater than end_line"
+    echo "start_line greater than end_line"
     exit 1
 
 # Section extraction
