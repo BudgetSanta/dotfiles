@@ -10,12 +10,30 @@
 "       ░   ░         ░      ░     ░ ░
 "      ░                           ░
 
+" # PLUGINS
+call plug#begin()
 
-execute pathogen#infect()
+Plug 'scrooloose/nerdtree'          " File explorer
+Plug 'OmniSharp/omnisharp-vim'      " C#
+
+call plug#end()
+
+
+" # APPEARANCE & BEHAVIOUR
+
 set nocompatible            " Removeds vi backwards compatability
 
-" Editor Formatting
-syntax enable				" Enable syntax highlighting
+" Use ctrl-[hjkl] to select the active split
+nmap <silent> <c-k> :wincmd k<CR>
+nmap <silent> <c-j> :wincmd j<CR>
+nmap <silent> <c-h> :wincmd h<CR>
+nmap <silent> <c-l> :wincmd l<CR>
+
+
+" # EDITOR
+let mapleader = ","
+
+syntax enable		    " Enable syntax highlighting
 set tabstop=4               " Visual spaces per tab
 set shiftwidth=4            " Spaces to use per indent
 set softtabstop=4           " Spaces per tab in edit
@@ -25,13 +43,22 @@ filetype indent on          " Load filetype specific indentation settings
 set autoindent
 set smartindent
 
-" UI Settings
-set scrolloff=5             " Scroll Offset keeps n lines of context around row
+set scrolloff=3             " Scroll Offset keeps n lines of context around row
 set showmode                " Show current vim mode
 set relativenumber          " Show relative linenumbers
-set number					" Fix current line number
-"set cursorline				 " Underline cursor line
-set nocursorline			" Remove Underline cursor line
+set number		    " Fix current line number
+
+
+set encoding=utf-8
+set autoread                " Reload files if changes detected (ie. git)
+set ttyfast
+set updatetime=100          " Update Time for screen
+set backspace=indent,eol,start
+
+
+" UI Settings
+"set cursorline		     " Underline cursor line
+set nocursorline	    " Remove Underline cursor line
 "set cursorcolumn            " Highlight cursor column
 set nocursorcolumn          " Remove Highlight cursor column
 set colorcolumn=80          " Colour a column
@@ -44,17 +71,13 @@ set wildmode=list:longest
 set wildignorecase          " Ignore case on command autocompletion
 
 " Config
-set encoding=utf-8
-set autoread                " Reload files if changes detected (ie. git)
-set ttyfast
-set updatetime=100          " Update Time for screen
-set backspace=indent,eol,start
 set laststatus=2
 set undodir=~/.vim/undo-dir
 set undofile
 set lazyredraw              " Redraw only when needed
 set synmaxcol=300			" Only highlight upto 300th column
 set mouse=a                 " Enable mouse in all modes
+set iskeyword-=_            " Makes _ act as a word boundary
 au FocusLost * :wa			" Autosave on lost focus
 
 
@@ -78,16 +101,16 @@ let mapleader = ","
 nnoremap / /\v
 vnoremap / /\v
 
-"" Alt-Enter autocomplete (May need iTerm > Profiles > Keys 'Left Opt'=Esc+)
-execute "set <a-cr>=\<esc>\<cr>"
-inoremap <a-cr> <C-n>
+""" Alt-Enter autocomplete (May need iTerm > Profiles > Keys 'Left Opt'=Esc+)
+"execute "set <a-cr>=\<esc>\<cr>"
+"inoremap <a-cr> <C-n>
 
 "" <leader><space> to clear search buffer
 nnoremap <leader><space> :noh<cr>
 
-"" Tab moves between brackets
-nnoremap <tab> %
-vnoremap <tab> %
+""" Tab moves between brackets
+"nnoremap <tab> %
+"vnoremap <tab> %
 
 """ Invisible Characters
 set list
