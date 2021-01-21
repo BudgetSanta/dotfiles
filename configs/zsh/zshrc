@@ -1,12 +1,17 @@
-ZSH_THEME="ys"
+# Tool for profiling zsh startup
+#zmodload zsh/zprof
+
+ZSH_THEME="ys"              # Works with OhMyZsh
 DISABLE_AUTO_TITLE="true"   # Disables auto setting of the terminal title
 ZSH_DISABLE_COMPFIX=true    # Removes warning from false positive security check
 
+# PLUGINS
+export NVM_LAZY_LOAD=true
+export NVM_COMPLETION=true
 ## Plugin Dir: ~/.oh-my-zsh/custom/plugins
 plugins=(
     git
-    zsh-syntax-highlighting
-    zsh-autosuggestions
+    zsh-nvm
 )
 
 ## UI Config

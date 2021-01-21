@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Mostly used for log messages to interpret newlines
 if [ $# -ne 1 ]; then
     echo "Usage: $0 'filename'"
     exit 1

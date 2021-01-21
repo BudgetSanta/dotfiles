@@ -1,4 +1,5 @@
 #!/bin/bash
 
+# Search for files
 echo "Searching ${PWD##*/} for \"$1\"...."
 find . -name $1

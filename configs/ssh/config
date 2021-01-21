@@ -7,7 +7,7 @@ Host home
     User pi
     HostName 10.0.0.2
 
-Host jira
+Host aws
     User ec2-user
-    HostName origin-jira.ansarada.com
-    IdentityFile ~/.ssh/aws-is-jira.pem
+    Hostname 54.248.128.45
+    IdentityFile ~/.ssh/aws.pem

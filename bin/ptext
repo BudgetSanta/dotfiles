@@ -1,4 +1,5 @@
 #!/bin/bash
 
+# Search for text in files
 echo "Searching ${PWD##*/} for \"$1\"...."
 grep -rn "$1" .

@@ -20,21 +20,11 @@ RED='\033[0;31m'
 LB_RED='\033[1;91m'
 
 #ALIASES
-# Using the better python
-alias bp=bpython
-alias py=python3
-
 # Specific locations
 alias dot="cd $DOTFILES"
 alias funcs="cd $DOTFILES/bin"
 
-
 #Git
-# alias gpush="git push"
-# alias gpull="git pull"
-# alias ga="git add"
-# alias gc="git commit"
-# alias grm="git rm"
 alias glog="git log --graph --oneline --decorate --all"
 alias huh="git-st"
 alias greset="git checkout HEAD --"
@@ -43,4 +33,3 @@ alias gundo="git reset --soft HEAD~1"
 #Other
 alias yo="ping 8.8.8.8"
 alias ,="ssh"
-alias okta="cd ~/bit-bucket/is-integrations/"
