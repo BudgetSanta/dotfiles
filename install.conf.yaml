@@ -7,7 +7,6 @@
     ~/.aliases: configs/bash/aliases
     ~/.ssh/config: configs/ssh/config
 
-
 ## Vim ##
 - link:
     ~/.vimrc: configs/vim/vimrc

@@ -10,13 +10,6 @@
 "       ░   ░         ░      ░     ░ ░
 "      ░                           ░
 
-" # PLUGINS
-call plug#begin()
-
-Plug 'scrooloose/nerdtree'          " File explorer
-Plug 'OmniSharp/omnisharp-vim'      " C#
-
-call plug#end()
 
 
 " # APPEARANCE & BEHAVIOUR

@@ -29,7 +29,25 @@ alias glog="git log --graph --oneline --decorate --all"
 alias huh="git-st"
 alias greset="git checkout HEAD --"
 alias gundo="git reset --soft HEAD~1"
+alias todos="git-branch-todos"
 
 #Other
 alias yo="ping 8.8.8.8"
 alias ,="ssh"
+
+#Overwrites
+alias ls='exa --color=auto'
+
+# Not an alias but due to the context bash scripts
+#  running in a subprocess the `cd` doesn't apply
+#  to the current process. Having a function inlines
+#	 it so that it will run in the current shell process
+mkcd() {
+	test -e "$1" && if ! [[ -d "$1" ]]; then
+  	>&2 echo "File exists and is not a directory"
+    return 1
+  fi
+
+  mkdir -p "$1"
+  cd "$1"
+}

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Interactively brings up commits to
-# 	a branch so they may be selectively
-#		modified/removed
+# Lists all files changed since a branch
+# 	from master
 git --no-pager diff --name-only $(git-branch-root)
