@@ -1,12 +1,7 @@
-# BASHRC
+# ZSHRC
 
 ## Vars
 export DOTFILES="$HOME/.dotfiles"
-
-
-## Personal Functions and Aliases
-export PATH="$DOTFILES/bin:$PATH"
-source $HOME/.aliases
 
 
 ## Lazy Loading of non essentials
@@ -37,3 +32,8 @@ eval "$(starship init zsh)"
 ## Oh My Zsh
 export ZSH=$HOME/.oh-my-zsh
 source $ZSH/oh-my-zsh.sh
+
+
+## Personal Functions and Aliases
+export PATH="$DOTFILES/bin:$PATH"
+source $HOME/.aliases
