@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+REPO=$(git remote -v \
+    | rg \(fetch\) \
+    | sed "s/^.*\/\([^\/]*\).git.*$/\1/")
+
+BRANCH=$(git branch --show-current)
+
+url="https://buildkite.com/edapp/$REPO/builds?branch=$BRANCH"
+
+echo "Opening Buildkite builds for $BRANCH"
+
+open $url

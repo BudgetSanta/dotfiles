@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+curl -o- -s --request POST 'http://localhost:5000/api/authentication/get-token' \
+    --header 'Content-Type: application/json' \
+    --data-raw "{
+        \"username\": \"${ED_LOCAL_USERNAME}\",
+        \"userpassword\": \"${ED_LOCAL_PASSWORD}\"
+    }" \
+| sed "s/{\"token\":\"\(.*\)\"}/\1/"

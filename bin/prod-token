@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+curl -o- -s --request POST 'https://hippo.edapp.com/api/authentication/get-token' \
+    --header 'Content-Type: application/json' \
+    --data-raw "{
+        \"username\": \"${ED_PROD_USERNAME}\",
+        \"userpassword\": \"${ED_PROD_PASSWORD}\"
+    }" \
+| sed "s/{\"token\":\"\(.*\)\"}/\1/"

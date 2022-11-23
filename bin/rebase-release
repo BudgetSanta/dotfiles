@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+TAG_PREFIX="release-"
+RELEASE_TAG_PATTERN="${TAG_PREFIX}[0-9]*"
+
+# Ensure that master is up to date locally
+echo "Fetching Changes..."
+git fetch &> /dev/null
+
+# Get the latest release tag
+latest_release_tag=$(git tag -l "$RELEASE_TAG_PATTERN"| tail -1)
+
+# Timestamp data
+timestamp="${latest_release_tag//release-/}"
+
+# Covert unixtimestamp into human readable date. Assume AEST
+#   perl oneliner found here https://unix.stackexchange.com/a/2993
+readable_date=$(perl -le 'print scalar localtime $ARGV[0]' "$timestamp")
+
+# Count commits on master not yet released
+release_lag_count=$(git log --pretty=oneline "$latest_release_tag"..origin/master| wc -l| sed "s/ *//")
+
+# Display data
+echo "Tag '$latest_release_tag' deployed at $readable_date AEST"
+
+# Rebasing with unstaged changes produces error which fails fast
+
+# Rebase Onto Release
+git rebase \
+    --onto "$latest_release_tag" origin/master \
+    --interactive
+
+# Status on how far behind release is
+echo "Release is ${release_lag_count} commits behind master!"

@@ -2,4 +2,4 @@
 
 # Search for files
 echo "Searching ${PWD##*/} for \"$1\"...."
-find . -name $1
+fd $1

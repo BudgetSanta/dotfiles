@@ -32,16 +32,16 @@ alias gundo="git reset --soft HEAD~1"
 alias todos="git-branch-todos"
 
 #Other
-alias yo="ping 8.8.8.8"
+alias yo="ping 1.1.1.1"
 alias ,="ssh"
+alias k="kubectl"
 
 #Overwrites
 alias ls='exa --color=auto'
 
-# Not an alias but due to the context bash scripts
-#  running in a subprocess the `cd` doesn't apply
-#  to the current process. Having a function inlines
-#	 it so that it will run in the current shell process
+# Functions inline the commands so are run
+#  in the same context as execution
+
 mkcd() {
 	test -e "$1" && if ! [[ -d "$1" ]]; then
   	>&2 echo "File exists and is not a directory"
@@ -50,4 +50,41 @@ mkcd() {
 
   mkdir -p "$1"
   cd "$1"
+}
+
+lazynvm() {
+  unset -f nvm node npm yarn
+  export NVM_DIR=~/.nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+}
+
+nvm() {
+  lazynvm 
+  nvm $@
+}
+
+node() {
+  lazynvm
+  node $@
+}
+
+npm() {
+  lazynvm
+  npm $@
+}
+
+yarn() {
+  lazynvm
+  nvm use
+  yarn $@
+}
+
+k9s() {
+    if $(docker ps 2>&1 | rg "Cannot connect to the Docker daemon" > /dev/null); then
+        echo "Docker Desktop not running... Go Start it!"
+        return 1
+    else
+        unset -f k9s
+        k9s $@
+    fi
 }
