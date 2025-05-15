@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+S12_ID_REGEX='^(role|user)_[0-9a-fA-F]{32}$'
+UUID_REGEX='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+help() {
+    echo "Convert S12 IDs and UUIDs to the other."
+    echo
+    echo "Usage: $0 <S12_ID or UUID>"
+    echo "    $0 user_<32-character-hex-string>"
+    echo "    $0 role_<32-character-hex-string>"
+    echo "    $0 <8-character-hex>-<4-character-hex>-<4-character-hex>-<4-character-hex>-<12-character-hex>"
+    echo
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+}
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+        help
+        exit 0
+        ;;
+    --*|-*)
+        echo "Unknown option: '$1'" 1>&2
+        exit 1
+        ;;
+  esac
+done
+
+if [ -z "$1" ]; then
+    help
+    exit 1
+fi
+
+
+if [[ $1 =~ $S12_ID_REGEX ]]; then
+    GUID="${1:5:32}"
+    ID="${GUID:0:8}-${GUID:8:4}-${GUID:12:4}-${GUID:16:4}-${GUID:20:12}"
+elif [[ $1 =~ $UUID_REGEX ]]; then
+    ID="${1//-}"
+else
+    echo "Invalid ID format. Please provide a valid S12_ID or UUID."
+    exit 1
+fi
+
+echo "$ID"
