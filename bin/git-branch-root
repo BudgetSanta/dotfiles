@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Retreives the earliest commit shared
-#		between HEAD and origin/master
-#		allowing functions to reference
-#		all changes on a branch
-git rev-parse origin/master...HEAD \
-	| grep "\^" \
-	| sed "s/\^//"

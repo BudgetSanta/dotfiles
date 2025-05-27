@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Lists all files changed since a branch
-# 	from master
-git --no-pager diff --name-only $(git-branch-root)

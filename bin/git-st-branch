@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-git diff --color --stat $(git-branch-root) 2> /dev/null \
-    | sed '$d; s/^ //' 
