@@ -3,45 +3,139 @@
 S12_ID_REGEX='^(role|user)_[0-9a-fA-F]{32}$'
 UUID_REGEX='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
 
+COPY_TO_CLIPBOARD=false
+PREFIX_WITH_USER=false
+PREFIX_WITH_ROLE=false
+
 help() {
     echo "Convert S12 IDs and UUIDs to the other."
     echo
-    echo "Usage: $0 <S12_ID or UUID>"
-    echo "    $0 user_<32-character-hex-string>"
-    echo "    $0 role_<32-character-hex-string>"
-    echo "    $0 <8-character-hex>-<4-character-hex>-<4-character-hex>-<4-character-hex>-<12-character-hex>"
+    echo "Usage: $0 [options] <S12_ID or UUID> [<S12_ID or UUID> ...]"
+    echo "    $0 user_<32-character-hex-string> [more IDs ...]"
+    echo "    $0 role_<32-character-hex-string> [more IDs ...]"
+    echo "    $0 <8-character-hex>-<4-character-hex>-<4-character-hex>-<4-character-hex>-<12-character-hex> [more IDs ...]"
     echo
     echo "Options:"
-    echo "  -h, --help    Show this help message"
+    echo "  -h, --help      Show this help message"
+    echo "  -c, --copy      Copy the converted ID to the clipboard (requires pbcopy)"
+    echo "  -u, --user      Prefix UUIDs with 'user_' when converting to S12 ID format"
+    echo "  -r, --role      Prefix UUIDs with 'role_' when converting to S12 ID format"
+    echo
+    echo "Short options can be combined, e.g. '-cu' is equivalent to '-c -u'."
+    echo "Cannot use both --user and --role at the same time."
+    echo "Copy to clipboard is only supported for a single ID at a time."
 }
 
+# Copies the provided string to the system clipboard using the first available tool.
+# Currently supports pbcopy (macOS). Extend this function to support other tools as needed.
+#
+# Usage: copy_to_clipboard <string>
+#
+# Arguments:
+#   $1 - The string to copy to the clipboard.
+copy_to_clipboard() {
+    if command -v pbcopy >/dev/null 2>&1; then
+        echo -n "$1" | pbcopy
+    # Add more tools here as needed, e.g.:
+    # elif command -v xclip >/dev/null 2>&1; then
+    #     echo -n "$1" | xclip -selection clipboard
+    else
+        echo "No clipboard tool found (tried: pbcopy)." 1>&2
+        return 1
+    fi
+}
+
+# Parse options
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -h|--help)
+    --help)
         help
         exit 0
         ;;
-    --*|-*)
+    --copy)
+        COPY_TO_CLIPBOARD=true
+        shift
+        ;;
+    --user)
+        PREFIX_WITH_USER=true
+        shift
+        ;;
+    --role)
+        PREFIX_WITH_ROLE=true
+        shift
+        ;;
+
+    # Glob pattern for short options
+    -[!-]*)
+        opt="${1#-}"
+        for ((i=0; i<${#opt}; i++)); do
+            case "${opt:$i:1}" in
+                h)
+                    help
+                    exit 0
+                    ;;
+                c)
+                    COPY_TO_CLIPBOARD=true
+                    ;;
+                u)
+                    PREFIX_WITH_USER=true
+                    ;;
+                r)
+                    PREFIX_WITH_ROLE=true
+                    ;;
+                *)
+                    echo "Unknown option: '-${opt:$i:1}'" 1>&2
+                    exit 1
+                    ;;
+            esac
+        done
+        shift
+        ;;
+    --*)
         echo "Unknown option: '$1'" 1>&2
         exit 1
         ;;
+    *)
+      break
+      ;;
   esac
 done
 
-if [ -z "$1" ]; then
+# Ensure ID(s) provided
+if [ $# -eq 0 ]; then
     help
     exit 1
 fi
 
-
-if [[ $1 =~ $S12_ID_REGEX ]]; then
-    GUID="${1:5:32}"
-    ID="${GUID:0:8}-${GUID:8:4}-${GUID:12:4}-${GUID:16:4}-${GUID:20:12}"
-elif [[ $1 =~ $UUID_REGEX ]]; then
-    ID="${1//-}"
-else
-    echo "Invalid ID format. Please provide a valid S12_ID or UUID."
+# Ensure not both user and role prefixes are set
+if $PREFIX_WITH_USER && $PREFIX_WITH_ROLE; then
+    echo "Error: Cannot use both --user and --role options at the same time." 1>&2
     exit 1
 fi
 
-echo "$ID"
+for arg in "$@"; do
+    # Transform S12 ID to UUID
+    if [[ $arg =~ $S12_ID_REGEX ]]; then
+        GUID="${arg:5:32}"
+        ID="${GUID:0:8}-${GUID:8:4}-${GUID:12:4}-${GUID:16:4}-${GUID:20:12}"
+        echo "$ID"
+    # Transform UUID to SC12 ID
+    elif [[ $arg =~ $UUID_REGEX ]]; then
+        ID="${arg//-}"
+        $PREFIX_WITH_USER && ID="user_$ID"
+        $PREFIX_WITH_ROLE && ID="role_$ID"
+        echo "$ID"
+    else
+        echo "Invalid ID format: $arg. Please provide a valid S12_ID or UUID." 1>&2
+        exit 1
+    fi
+done
+
+if [ "$COPY_TO_CLIPBOARD" = true ]; then
+    if [ $# -gt 1 ]; then
+        echo "Error: --copy option can only be used with a single ID." 1>&2
+    else
+        copy_to_clipboard "$ID"
+        echo "Copied to clipboard."
+    fi
+fi
