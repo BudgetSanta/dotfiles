@@ -15,6 +15,6 @@ out=$(rg \
 
 read -r filename line <<< "${out}"
 
-if ! [[ -z ${filename+x}  ]]; then
+if [[ -n ${filename+x}  ]]; then
     ${EDITOR:-vim} "${filename}" +"normal! ${line}zz"
 fi

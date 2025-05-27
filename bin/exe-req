@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+# Exectuable Requirement
+#   Tests whether exectuables are available
+
+executable_requirements=( "$@" )
+
+for req in "${executable_requirements[@]}"; do
+    if ! command -v "$req" &> /dev/null; then
+        echo "exectuable '$req' could not be found and is required." 1>&2
+        exit 1
+    fi
+done

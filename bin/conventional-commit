@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Check if a rebase is in progress in the current git repository
+is_rebase_in_progress() {
+    local git_dir
+    git_dir=$(git rev-parse --git-dir 2>/dev/null) || return 1
+    [[ -d "$git_dir/rebase-merge" || -d "$git_dir/rebase-apply" ]]
+}
+
+if is_rebase_in_progress; then
+    # Do not prompt for input during a rebase
+    exit 0
+fi
+
+# Requires 'gum'
+command -v gum >/dev/null 2>&1 || { echo >&2 "gum required but not found. (https://github.com/charmbracelet/gum)"; exit 1; }
+
+
+TYPE=$(echo \
+"build
+chore
+ci
+docs
+feat
+fix
+perf
+refactor
+revert
+style
+test" \
+        |gum filter \
+        --placeholder "Commit type...")
+
+SCOPE=$(gum input  \
+    --header "Scope" \
+    --placeholder "(optional)" \
+    --value "$(commit-key)")
+test -n "$SCOPE" && SCOPE="($SCOPE)"
+
+SUMMARY=$(gum input \
+    --value "$TYPE$SCOPE: " \
+    --placeholder "When merged, this commit will..." \
+    --width 50)
+
+DESCRIPTION=$(gum write \
+    --placeholder "Details..."\
+    --width 80
+    )
+test -n "$DESCRIPTION" && DESCRIPTION="\n\n\t$DESCRIPTION"
+
+echo -e "$SUMMARY$DESCRIPTION"
+

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+exe-req gum
+
+USAGE="""
+Usage: $0 [BRANCH]
+
+Rebase the current branch onto the remote version of the
+specified branch. If no branch is provided, you will be
+prompted to select one.
+
+Options:
+  -h, --help    Show this help message and exit.
+"""
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            echo "$USAGE"
+            exit 0
+            ;;
+        -|--)
+            echo "Unknown option: $1" >&2
+            echo "$USAGE" >&2
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# Get branch to rebase onto
+if [[ $# -ge 1 ]]; then
+    base_branch="$1"
+else
+    gum spin --spinner dot --title "Fetching remote branches..." -- git fetch
+    mapfile -t branches < <(git for-each-ref --format='%(refname:short)' refs/heads/)
+
+    if [[ ${#branches[@]} -eq 0 ]]; then
+        echo "No branches found." >&2
+        exit 1
+    fi
+
+    base_branch=$(printf "%s\n" "${branches[@]}" | \
+        gum filter --placeholder="Select branch to rebase onto:")
+    if [[ -z "$base_branch" ]]; then
+        echo "No branch selected. Exiting." >&2
+        exit 1
+    fi
+fi
+
+# Ensure base branch is up to date
+if ! gum spin --spinner dot --title "Updating $base_branch..." -- \
+        sh -c "git checkout $base_branch && git pull && git checkout -"; then
+    echo "Failed to update $base_branch." >&2
+    exit 1
+fi
+
+git rebase --interactive "$base_branch"

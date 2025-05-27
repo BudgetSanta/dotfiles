@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+exe-req 'hyperfine'
+
+hyperfine --warmup 2 \
+    "$SHELL -i -c exit" \
+    "sh -i -c exit"

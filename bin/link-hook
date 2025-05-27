@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+USAGE="Usage: link-hook [-c|--clobber]"
+GIT_HOOKS_DIR="$(git rev-parse --git-path hooks 2>/dev/null)"
+SCRIPT_DIR="${BASH_SOURCE[0]%/*}"
+DOTFILES_HOOKS_DIR="$SCRIPT_DIR/git-hooks"
+CLOBBER=false
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -c|--clobber)
+            CLOBBER=true
+            shift
+            ;;
+        -h|--help)
+            echo "$USAGE"
+            exit 0
+            ;;
+        -* )
+            echo "Unknown option: $1" >&2
+            echo "$USAGE" >&2
+            exit 1
+            ;;
+        * )
+            break
+            ;;
+    esac
+done
+
+if [[ -z "$GIT_HOOKS_DIR" || ! -d "$GIT_HOOKS_DIR" ]]; then
+    echo "Not inside a git repository or hooks directory not found." >&2
+    exit 1
+fi
+
+# List available hooks
+mapfile -t available_hooks < <(find "$DOTFILES_HOOKS_DIR" -type f -exec basename {} \;)
+if [[ ${#available_hooks[@]} -eq 0 ]]; then
+    echo "No hooks found in $DOTFILES_HOOKS_DIR" >&2
+    exit 1
+fi
+
+# Use gum to select a hook
+selected_hook=$(printf "%s\n" "${available_hooks[@]}" | gum filter --placeholder="Select a git hook to link:")
+if [[ -z "$selected_hook" ]]; then
+    echo "No hook selected. Exiting." >&2
+    exit 1
+fi
+
+src="$DOTFILES_HOOKS_DIR/$selected_hook"
+dest="$GIT_HOOKS_DIR/$selected_hook"
+
+# Check for existing non-sample hook
+if [[ -e "$dest" && ! "$dest" =~ \.sample$ ]]; then
+    if [[ "$CLOBBER" != true ]]; then
+        echo "Hook $selected_hook already exists in $GIT_HOOKS_DIR. Use -c or --clobber to overwrite." >&2
+        exit 1
+    fi
+    rm -f "$dest"
+fi
+
+ln -s "$src" "$dest"
+echo "Linked $src -> $dest"
+

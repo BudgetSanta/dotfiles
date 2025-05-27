@@ -1,20 +1,82 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-which mutt || echo "Mutt not installed" && exit 1
+set -euo pipefail
 
-email="steiner.jared1996@gmail.com"
-if [ $# -lt 2 ]; then
-    printf "Usage: msg \"SUBJECT\" \"MESSAGE\" [-a FILE_TO_ATTACH]\n"
+TOPICS_FILE="$HOME/.ntfy-topics"
+USAGE="Usage: msg [-t|--topic TOPIC] \"MESSAGE\""
+
+# Ensure topics file exists
+if [[ ! -f "$TOPICS_FILE" ]]; then
+    echo "# Add one topic per line. Lines starting with # are ignored." > "$TOPICS_FILE"
+    echo "No topics file found. Created $TOPICS_FILE. Please add topics to this file and re-run." >&2
+    exit 1
 fi
 
-echo $2 > tmpMsg.txt
+# Read topics, ignoring blank, whitespace, and # lines, trimming trailing whitespace
+TOPICS=()
+while IFS= read -r line; do
+    # Skip blank lines and comment lines
+    if [[ $line =~ ^[[:space:]]*$ || $line =~ ^[[:space:]]*# ]]; then
+        continue
+    fi
+    TOPICS+=("${line%%*( )}")
+done < "$TOPICS_FILE"
 
-if [ $# -eq 4 ]; then
-    file=$4
-    mutt -s $1 $email -a $file < tmpMsg.txt
-fi 
-if [ $# -eq 2 ]; then
-    mutt -s $1 $email < tmpMsg.txt
+if [[ ${#TOPICS[@]} -eq 0 ]]; then
+    echo "No topics available in $TOPICS_FILE. Please add topics and re-run." >&2
+    exit 1
 fi
 
-rm tmpMsg.txt
+selected_topic=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--topic)
+            if [[ -z "${2:-}" ]]; then
+                echo "Error: Missing argument for $1" >&2
+                echo "$USAGE" >&2
+                exit 1
+            fi
+            selected_topic="$2"
+            shift 2
+            ;;
+        -h|--help)
+            echo "$USAGE"
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            echo "$USAGE" >&2
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [[ $# -lt 1 ]]; then
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+message="$1"
+
+# Select topic if not provided
+if [[ -z "$selected_topic" ]]; then
+    selected_topic=$(gum filter --placeholder="Select a topic to send to:" "${TOPICS[@]}")
+fi
+
+if [[ -z "$selected_topic" ]]; then
+    echo "No topic selected. Exiting." >&2
+    exit 1
+fi
+
+URL="https://ntfy.sh/$selected_topic"
+if curl --silent -d "$message" "$URL" &> /dev/null; then
+    echo "[$URL]: $message"
+else
+    echo "Failed to send message to $URL" >&2
+    exit 1
+fi

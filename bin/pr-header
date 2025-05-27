@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BRANCH=$(git branch --show-current)
+ISSUE_KEY=$(commit-key)
+
+echo "[![Build status](https://badge.buildkite.com/e0d37ce0c25ca3bc01be9b93d6591d09718b220056c181be2c.svg?branch=${BRANCH})](https://buildkite.com/edapp/ed-development/builds?branch=${BRANCH})"
+echo "## 🎫 Jira [${ISSUE_KEY}](https://safetyculture.atlassian.net/browse/${ISSUE_KEY})"

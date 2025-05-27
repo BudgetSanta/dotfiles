@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Requires 'gum'
+command -v gum >/dev/null 2>&1 || { echo >&2 "gum required but not found. (https://github.com/charmbracelet/gum)"; exit 1; }
+    
+    
+TYPE=$(echo \
+"praise
+nitpick
+suggestion
+issue
+todo
+question
+thought
+chore
+note" \
+        |gum filter \
+        --placeholder "Comment label...")
+
+DECORATION=$(echo \
+"non-blocking
+blocking
+if-minor" \
+    | gum filter\
+    --placeholder "Choose descoration...")
+
+test -n "$DECORATION" && DECORATION="($DECORATION)"
+
+SUMMARY=$(gum input \
+    --value "__$TYPE$DECORATION:__ " \
+    --placeholder "Whats this comment about..." \
+    --width 50)
+
+DESCRIPTION=$(gum write \
+    --placeholder "Details..."\
+    --width 80)
+
+test -n "$DESCRIPTION" && DESCRIPTION="\n\n$DESCRIPTION"
+
+echo -e "$SUMMARY$DESCRIPTION"
+
+

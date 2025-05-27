@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Simple exectuable to echo values and metadata if $DEBUG is set
+
+# TODO: Extend to allow -l|--log option to tee values into a log file
+
+DATE_FORMAT_STRING='+%Y-%m-%d %H:%M:%S'
+PARENT_EXE=$(basename "$0")
+
+if [[ -n ${DEBUG+x} ]]; then
+    echo "${PARENT_EXE}:$(date "${DATE_FORMAT_STRING}"):" "$@"
+fi

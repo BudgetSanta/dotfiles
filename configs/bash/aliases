@@ -52,6 +52,9 @@ mkcd() {
   cd "$1"
 }
 
+# functions to lazy load nvm
+
+
 lazynvm() {
   unset -f nvm node npm yarn
   export NVM_DIR=~/.nvm
@@ -76,17 +79,9 @@ npm() {
 yarn() {
   lazynvm
   nvm use
+  which yarn &>/dev/null || npm install --global yarn
   yarn $@
 }
 
-k9s() {
-    if $(docker ps 2>&1 | rg "Cannot connect to the Docker daemon" > /dev/null); then
-        echo "Docker Desktop not running... Go Start it!"
-        return 1
-    else
-        unset -f k9s
-        k9s $@
-    fi
-}
 # better aws
 alias aws='r=$RANDOM;u=("https://youtu.be/7_EeCkHs-e0?si=4NBODuMPLaChNNrO" "https://youtu.be/ebkAM2_zsEk?si=llPYNScSfLYc2N6a" "https://youtu.be/2x2jAuSXMOg?si=DjhCv5EGK2YLZ1kn" "https://youtu.be/GeLLNABXFZo?si=ZyFoy8SS4Q4XD-4H");i=$((r%4));c=${u[$i]:-${u[2]}};x=$((r%10));if [ $x -eq 0 ];then open "$c";say jeffery bezos has approved your A W S session;fi;command aws'

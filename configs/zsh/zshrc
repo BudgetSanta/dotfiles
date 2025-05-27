@@ -16,24 +16,31 @@ export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
 export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"
 
 
+# Starship Prompt
+eval "$(starship init zsh)"
+
+
 ## Bat Manpages colour
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-
-## Starship Prompt
-eval "$(starship init zsh)"
-
-### Oh My Zsh
-#export ZSH=$HOME/.oh-my-zsh
-#source $ZSH/oh-my-zsh.sh
-
-eval "$(zoxide init zsh)"
-
 ## Personal Functions and Aliases
 export PATH="$DOTFILES/bin:$PATH"
+for dir in $(find "$HOME/.dotfiles/bin" -type d); do
+  PATH="$dir:$PATH"
+done
 source $HOME/.aliases
 
+
 ## Fzf and Fd
-export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow'
+export FZF_DEFAULT_OPTS=''
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
+
+### Find File
+alias ff="fzf --preview 'bat -n --color=always {}'"
+
+
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+#autoload -Uz compinit && compinit
+#[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)

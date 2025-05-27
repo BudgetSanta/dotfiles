@@ -1,0 +1,32 @@
+#!/bin/bash
+
+BRANCH=$(git branch --show-current)
+ISSUE_KEY=$(commit-key)
+tmpfile=$(mktemp /tmp/pr-template.${ISSUE_KEY}.XXXXXX)
+
+echo "[![Build status](https://badge.buildkite.com/5f0fd5fc9fb54ccff1d5a457016bbca98cc901775306e7f741.svg?branch=${BRANCH})](https://buildkite.com/safetyculture/sc-training/builds?branch=${BRANCH})" >> "$tmpfile"
+# EDAPP echo "[![Build status](https://badge.buildkite.com/e0d37ce0c25ca3bc01be9b93d6591d09718b220056c181be2c.svg?branch=${BRANCH})](https://buildkite.com/edapp/ed-development/builds?branch=${BRANCH})" >> "$tmpfile"
+
+test -z "${ISSUE_KEY}" || echo "## 🎫 Jira [${ISSUE_KEY}](https://safetyculture.atlassian.net/browse/${ISSUE_KEY})" >> "$tmpfile"
+
+echo "
+# What
+
+    
+
+# Changes
+
+    
+
+# Testing
+
+    
+
+# Notes
+
+    
+" >> "$tmpfile"
+
+cat "$tmpfile"
+
+rm "$tmpfile"

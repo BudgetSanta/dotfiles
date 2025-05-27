@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+NAMESPACES=( \
+  "access" "actions" "ai" "analytics" "analytics2" "announcements" \
+  "api" "api2" "assets" "assets2" "bsa" "bsa2" "bsa3" "bsa4" "bsa6" \
+  "care" "champions" "collaboration" "contractors" "contractors2" \
+  "data-gen" "dev-local" "fe" "feu" "groups" "inspections" \
+  "inspections2" "inspections3" "iot" "issues" "issues2" \
+  "localisation" "loneworker" "media1" "onboarding" "permissions" \
+  "permissions2" "platform" "platform2" "qa" "reports" "reports2" \
+  "resources" "sec1" "test-namespace" "train-author1" "train-author2" \
+  "train-coursemgmt1" "train-coursemgmt2" "train-custplat1" \
+  "train-custplat2" "train-custplat3" "train-flex1" "train-flex2" \
+  "train-flex3" "train-flex4" "train-flex5" "train-qe1" "train-qe2" \
+  "train-qe3" "unified-lib" "users" "uxa" "uxa2" "webplatform")
+
+help() {
+    echo "Interactively select a Kubernetes namespace and set it as the current context."
+    echo
+    echo "Usage: $0 [NAMESPACE]"
+    echo
+    echo "If NAMESPACE is provided, it will be pre-filled in the selection filter."
+    echo
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+}
+
+exe-req 'gum'
+
+# Parse options
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+        help
+        exit 0
+        ;;
+    --*|-*)
+        echo "Unknown option: '$1'" 1>&2
+        exit 1
+        ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+GUM_ARGS=( \
+  --placeholder="Pick a namespace..." \
+  --fuzzy)
+
+if [[ $# -gt 0 ]]; then
+  GUM_ARGS+=(--value="$1")
+fi
+
+NAMESPACE=$(gum filter "${GUM_ARGS[@]}" "${NAMESPACES[@]}")
+
+kubectl config set-context --current --namespace="$NAMESPACE"

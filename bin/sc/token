@@ -1,0 +1,111 @@
+#!/bin/bash
+set -euo pipefail
+
+#######################################
+# Call to Hippo endpoint to refresh authentication token
+# Note: Will error and exit on a non 2xx status code
+# Note: Will not request an additional token if one is present
+# Output: API_TOKEN
+#######################################
+get_token() {
+    # If set already, we won't get another token
+    if [[ -n "${API_TOKEN:-}" ]]; then
+        echo "$API_TOKEN"
+        return
+    fi
+
+    local response code token
+    response=$(curl --write-out "\n%{http_code}\n" --silent --output - \
+        --request POST "$API_URL/authentication/get-token" \
+        --header 'Content-Type: application/json' \
+        --data-raw "{
+            \"username\": \"${API_USER}\",
+            \"userpassword\": \"${API_PASS}\"
+        }")
+    
+    # Assumes last line is status code
+    code=$(echo "$response" | tail -n -1)
+    status_check "$code" "token refresh"
+    # Assumes first line is token response
+    token=$(echo "$response" | head -n 1 | jq -r '.token')
+    if [[ -n "$token" ]]; then
+        echo "$token"
+    else
+        echo "Failed to retrieve token." >&2
+        exit 1
+    fi
+}
+
+#######################################
+# Checks a provided HTTP status code to see if its successful (2XX)
+# Note: If not successful, errors and exits
+# Note: 000 code is synonymous with an inability to call the service (ie not running)
+# Output: None, only exits on issue
+#######################################
+status_check() {
+    local status_code call_name
+    status_code="$1"
+    call_name="${2:-Call name not specified}"
+
+    if [[ "$status_code" == 000 ]]; then
+        echo "Failed to call API during ($call_name). Ensure it is running and accessible." 1>&2
+        exit 1
+    fi
+
+    if [[ "$status_code" != 2* ]]; then
+        echo "Request failed during ($call_name) with HTTP status code: $status_code" 1>&2
+        exit 1
+    fi
+}
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -e|--environment)
+        ENVIRONMENT="$2"
+        shift
+        shift
+        ;;
+    -h|--help)
+        echo "Usage: $0 -e|--environment [local|staging|production]"
+        exit 0
+        ;;
+    --*|-*)
+        echo "Unknown option: '$1'" 1>&2
+        exit 1
+        ;;
+  esac
+done
+
+if [[ -z "${ENVIRONMENT:-}" ]]; then
+    ENVIRONMENT=$(gum choose local staging production)
+fi
+
+## API Urls
+
+# shellcheck disable=SC2034  # Referenced only indirectly
+LOCAL_API='http://localhost:5000/api'
+# shellcheck disable=SC2034  # Referenced only indirectly
+STAGING_API='https://staging3-hippo.edapp.com/api'
+# shellcheck disable=SC2034  # Referenced only indirectly
+PRODUCTION_API='https://hippo.edapp.com/api'
+API_URL=''
+
+ENV_UPPER=$(echo "$ENVIRONMENT"| tr '[:lower:]' '[:upper:]')
+CREDENTIAL_PROMPT_USER="$ENVIRONMENT ed-admin username (export ED_${ENV_UPPER}_EDADMIN_USER='{{username}}' to skip)"
+CREDENTIAL_PROMPT_PASS="$ENVIRONMENT ed-admin password (export ED_${ENV_UPPER}_EDADMIN_PASS='{{password}}' to skip)"
+
+case "$ENVIRONMENT" in
+    local|staging|production)
+        API_URL_VARIABLE="${ENV_UPPER}_API"
+        API_USER_VARIABLE="ED_${ENV_UPPER}_EDADMIN_USER"
+        API_PASS_VARIABLE="ED_${ENV_UPPER}_EDADMIN_PASS"
+        API_URL="${!API_URL_VARIABLE}"
+        API_USER="${!API_USER_VARIABLE:-$(gum input --placeholder "$CREDENTIAL_PROMPT_USER")}"
+        API_PASS="${!API_PASS_VARIABLE:-$(gum input --password --placeholder "$CREDENTIAL_PROMPT_PASS")}"
+        ;;
+    *)
+        echo "No definition for environment '$ENVIRONMENT'" 1>&2
+        exit 1
+esac
+
+get_token

@@ -107,7 +107,7 @@ nnoremap <leader><space> :noh<cr>
 
 """ Invisible Characters
 set list
-set listchars=tab:\ \ ,eol:\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+"set listchars=tab:\ \ ,eol:\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
 "" Disable arrow keys in normal mode (Helps to enforce hjkl movement)
 nnoremap <up> <nop>

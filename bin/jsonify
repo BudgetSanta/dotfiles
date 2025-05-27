@@ -1,7 +1,8 @@
 #!/bin/bash
 
 if [[ "$#" -ne 1 ]]; then
-    _error "Usage $0 <json-file>"
+    echo >&2 "Usage $0 <json-file>"
+    exit 1
 else
-    python -m json.tool "$1"
+    echo "$1" | jq
 fi

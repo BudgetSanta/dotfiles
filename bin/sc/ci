@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+# TODO: without specified pipeline, if matches one, open, if more, listing urls
+
+BUILDKITE_API="https://api.buildkite.com/v2"
+JSON_PATH_TO_URL='.[0].web_url'
+
+if [[ -z ${PERSONAL_BUILDKITE_TOKEN+x} ]]; then
+    >&2 echo "PERSONAL_BUILDKITE_TOKEN not set, will never find specific build"
+fi
+debug "Token: $PERSONAL_BUILDKITE_TOKEN"
+
+CURRENT_SHA=$(git rev-parse HEAD)
+debug "Current SHA: $CURRENT_SHA"
+
+BUILD_PAYLOAD=$(https \
+    --auth-type bearer \
+    --auth "${PERSONAL_BUILDKITE_TOKEN}" \
+    GET "${BUILDKITE_API}/builds?commit=${CURRENT_SHA}" \
+    --body)
+debug "Response payload: ${BUILD_PAYLOAD}"
+
+BUILD_URL=$(echo ${BUILD_PAYLOAD}| jq "${JSON_PATH_TO_URL}" | sed "s/\"//g")
+
+# TODO: set primary pipeline via repo/home dir config file?? 
+if [[ "${BUILD_URL}" = "null" ]]; then
+    echo "Couldn't find build for current commit hash, opening branch instead" 
+    open "https://buildkite.com/safetyculture/hippo/builds?branch=$(git branch --show-current)"
+    exit 1
+fi
+
+open $BUILD_URL
