@@ -1,33 +1,55 @@
 #!/usr/bin/env bash
-
-set -e
+set -euo pipefail
 
 VPN_CONFIGS="$HOME/.vpn"
-INITIAL_QUERY="${@:-}"
+INITIAL_QUERY="${*:-}"
 
 exe-req "gum" "rg"
 
-config=$(rg "(^#|^[ ]*$)" --invert-match < "$VPN_CONFIGS" \
+main() {
+    # Ensure VPN config file exists
+    if [[ ! -f "$VPN_CONFIGS" ]]; then
+        echo "VPN config file not found: $VPN_CONFIGS" >&2
+        exit 1
+    fi
+
+    # Select config
+    local config
+    config=$(rg '(^#|^[ ]*$)' --invert-match < "$VPN_CONFIGS" \
         | gum filter \
             --placeholder "VPN Fuzzy Search" \
             --value="$INITIAL_QUERY" \
             --select-if-one)
 
-config=${config//, /,}
-env=$(echo "$config" | cut -d ',' -f1)
-service=$(echo "$config" | cut -d ',' -f2)
-type=$(echo "$config" | cut -d ',' -f3)
-port=$(echo "$config" | cut -d ',' -f4)
-aws_profile=$(echo "$config" | cut -d ',' -f5)
+    if [[ -z "$config" ]]; then
+        echo "No VPN config selected." >&2
+        exit 1
+    fi
 
-# Login to AWS SSO if not already logged in
-aws sts get-caller-identity &> /dev/null ||aws sso login
+    config=${config//, /,}
+    local env service type port
+    IFS=',' read -r env service type port <<< "$config"
 
-pushd "$HOME/git/ed-infra-ssm-vpn" &>/dev/null || exit
+    # Login to AWS SSO if not already logged in
+    if ! aws sts get-caller-identity &>/dev/null; then
+        gum spin --spinner dot --title "Logging in to AWS SSO..." -- aws sso login
+    fi
 
-service_type_suffix=$([[ $type =~ ^(primary|writer)$ ]] && echo "-$type" || echo "")
-resource="$service$service_type_suffix"
+    local vpn_dir="$HOME/git/ed-infra-ssm-vpn"
+    if [[ ! -d "$vpn_dir" ]]; then
+        echo "VPN directory not found: $vpn_dir" >&2
+        exit 1
+    fi
 
-export LOCAL_PORT="$port"; ./aws-connect.sh "$env" "$resource"
+    local service_type_suffix resource
+    service_type_suffix=$([[ $type =~ ^(primary|writer)$ ]] && echo "-$type" || echo "")
+    resource="$service$service_type_suffix"
 
-popd &>/dev/null || exit
+    (
+        cd "$vpn_dir"
+        export LOCAL_PORT="$port"
+        ./aws-connect.sh "$env" "$resource"
+    )
+}
+
+main "$@"
