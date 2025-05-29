@@ -12,9 +12,7 @@ if is_rebase_in_progress; then
     exit 0
 fi
 
-# Requires 'gum'
-command -v gum >/dev/null 2>&1 || { echo >&2 "gum required but not found. (https://github.com/charmbracelet/gum)"; exit 1; }
-
+exe-req gum
 
 TYPE=$(echo \
 "build
@@ -28,8 +26,8 @@ refactor
 revert
 style
 test" \
-        |gum filter \
-        --placeholder "Commit type...")
+    |gum filter \
+    --placeholder "Commit type...")
 
 SCOPE=$(gum input  \
     --header "Scope" \
@@ -43,10 +41,13 @@ SUMMARY=$(gum input \
     --width 50)
 
 DESCRIPTION=$(gum write \
-    --placeholder "Details..."\
-    --width 80
-    )
-test -n "$DESCRIPTION" && DESCRIPTION="\n\n\t$DESCRIPTION"
+    --placeholder "Details..." \
+    --width 80)
+
+# Word wrap DESCRIPTION at 80 characters per line
+if [[ -n "$DESCRIPTION" ]]; then
+    DESCRIPTION="\n\n$(echo "$DESCRIPTION" | fmt -w 70 | sed 's/^/\t/')"
+fi
 
 echo -e "$SUMMARY$DESCRIPTION"
 
