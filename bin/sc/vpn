@@ -28,7 +28,7 @@ main() {
 
     config=${config//, /,}
     local env service type port
-    IFS=',' read -r env service type port <<< "$config"
+    IFS=',' read -r env service type port _ <<< "$config"
 
     # Login to AWS SSO if not already logged in
     if ! aws sts get-caller-identity &>/dev/null; then
