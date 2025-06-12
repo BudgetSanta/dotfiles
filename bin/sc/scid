@@ -7,13 +7,15 @@ COPY_TO_CLIPBOARD=false
 PREFIX_WITH_USER=false
 PREFIX_WITH_ROLE=false
 
+exe=$(basename $0)
+
 help() {
     echo "Convert S12 IDs and UUIDs to the other."
     echo
-    echo "Usage: $0 [options] <S12_ID or UUID> [<S12_ID or UUID> ...]"
-    echo "    $0 user_<32-character-hex-string> [more IDs ...]"
-    echo "    $0 role_<32-character-hex-string> [more IDs ...]"
-    echo "    $0 <8-character-hex>-<4-character-hex>-<4-character-hex>-<4-character-hex>-<12-character-hex> [more IDs ...]"
+    echo "Usage: $exe [options] <S12_ID or UUID> [<S12_ID or UUID> ...]"
+    echo "    $exe user_<32-character-hex-string> [more IDs ...]"
+    echo "    $exe role_<32-character-hex-string> [more IDs ...]"
+    echo "    $exe <8-character-hex>-<4-character-hex>-<4-character-hex>-<4-character-hex>-<12-character-hex> [more IDs ...]"
     echo
     echo "Options:"
     echo "  -h, --help      Show this help message"
