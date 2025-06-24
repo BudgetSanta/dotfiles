@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+STATE_DIR="${TMPDIR:-/tmp}/.tk"
+mkdir -p "$STATE_DIR"
+
+PARENT_PID=$PPID
+STATE_FILE="$STATE_DIR/timer.$PARENT_PID"
+
+print_help() {
+    script_name=$(basename "$0")
+    cat <<EOF
+Timekeeper - A simple shell timer script
+
+Usage: $script_name [OPTIONS]
+
+Prints the time since last invocation in this shell.
+
+Options:
+  -h, --help              Show this help message
+  -r, --restart           Restart the stored time for this shell
+  -c, --cleanup           Remove all timer files for all shells
+  -m, --measurement UNIT  Force output in ms (millisecond), s (second), m (minute), or h (hour)
+  -n, --note NOTE         Add a note to the output
+  -v, --verbose           Show full logline with date and all time units
+EOF
+}
+
+# Default settings
+MEASUREMENT=""
+NOTE=""
+VERBOSE=0
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            print_help
+            exit 0
+            ;;
+        -r|--restart)
+            rm -f "$STATE_FILE"
+            echo "Timer restarted for shell PID $PARENT_PID."
+            exit 0
+            ;;
+        -c|--cleanup)
+            rm -f "$STATE_DIR"/timer.*
+            echo "Cleaned up all timer files."
+            exit 0
+            ;;
+        -m|--measurement)
+            shift
+            case "$1" in
+                ms|millisecond) MEASUREMENT="ms" ;;
+                s|second)       MEASUREMENT="s" ;;
+                m|minute)       MEASUREMENT="m" ;;
+                h|hour)         MEASUREMENT="h" ;;
+                *)
+                    echo "Invalid measurement unit: $1"
+                    exit 1
+                    ;;
+            esac
+            ;;
+        -n|--note)
+            shift
+            NOTE="$1"
+            ;;
+        -v|--verbose)
+            VERBOSE=1
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# Get current time in nanoseconds since epoch (as a single value)
+now_nsec=$(date +%s%N)
+now_epoch=${now_nsec:0:10}  # First 10 digits: epoch seconds
+now_human=$(date "+%Y-%m-%d %H:%M:%S")
+
+if [[ -f "$STATE_FILE" ]]; then
+    last_nsec=$(cut -d' ' -f1 "$STATE_FILE")
+    last_epoch=${last_nsec:0:10}
+
+    # Calculate timespan in seconds and milliseconds
+    timespan_s=$((now_epoch - last_epoch))
+    timespan_ms=$(( 10#${now_nsec:0:13} - 10#${last_nsec:0:13} )) # up to ms precision
+
+    # If negative (e.g., clock change), fallback to seconds
+    if (( timespan_ms < 0 )); then
+        timespan_ms=$(( timespan_s * 1000 ))
+    fi
+
+    # Print verbose output if requested, then exit
+    if (( VERBOSE )); then
+        hours=$((timespan_s / 3600))
+        mins=$(( (timespan_s % 3600) / 60 ))
+        secs=$((timespan_s % 60))
+        printf "[%s] %02dh:%02dm:%02ds since last invocation in shell PID %s\n" \
+            "$now_human" "$hours" "$mins" "$secs" "$PARENT_PID"
+    else
+        # Compose dynamic or forced timespan string
+        if [[ -n "$MEASUREMENT" ]]; then
+            case "$MEASUREMENT" in
+                ms) timespan_str="${timespan_ms}ms" ;;
+                s)  timespan_str="${timespan_s}s" ;;
+                m)  timespan_str="$((timespan_s / 60))m" ;;
+                h)  timespan_str="$((timespan_s / 3600))h" ;;
+            esac
+        else
+            if (( timespan_s < 3 )); then
+                timespan_str="${timespan_ms}ms"
+            elif (( timespan_s < 180 )); then
+                timespan_str="${timespan_s}s"
+            elif (( timespan_s < 10800 )); then
+                timespan_str="$((timespan_s / 60))m"
+            else
+                timespan_str="$((timespan_s / 3600))h"
+            fi
+        fi
+
+        if [[ -n "$NOTE" ]]; then
+            echo "tk($PARENT_PID): $timespan_str [$NOTE]"
+        else
+            echo "tk($PARENT_PID): $timespan_str"
+        fi
+    fi
+else
+    echo "Timekeeping for $PARENT_PID begun"
+fi
+
+# Save the nanosecond timestamp for next run
+echo "$now_nsec" > "$STATE_FILE"
