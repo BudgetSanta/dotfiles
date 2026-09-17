@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+help() {
+  echo "Intercept traffic for a specific service."
+  echo
+  echo "Usage: $(basename $0) <service>"
+  echo
+  echo "Arguments:"
+  echo "  service    Name of the service to intercept"
+  echo
+  echo "Options:"
+  echo "  -h, --help    Show this help message"
+}
+
+# Parse options
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  -h | --help)
+    help
+    exit 0
+    ;;
+  --* | -*)
+    echo "Unknown option: '$1'" 1>&2
+    exit 1
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+# Check if service argument is provided
+if [[ $# -lt 1 ]]; then
+  echo "Error: Service name is required" 1>&2
+  echo
+  help
+  exit 1
+fi
+
+SERVICE="$1"
+
+# Match service and run corresponding command
+case "$SERVICE" in
+hippo)
+  if ! is-slate-vpn-connected; then
+    echo "Error: Slate VPN not connected" 1>&2
+    exit 1
+  fi
+  scli dev intercept --slate $(kubectl ns --current) hippo-api --envJSON
+  aws-creds-to-env-file
+  ;;
+*)
+  echo "Error: Unknown service '$SERVICE'" 1>&2
+  exit 1
+  ;;
+esac

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Take salt as $1, if not provided, error and exit
+if [ -z "${1:-}" ]; then
+  echo "Error: Salt parameter required" >&2
+  echo "Usage: $0 <salt>" >&2
+  exit 1
+fi
+
+SALT="$1"
+
+SEED=$(op read "op://Private/Database Access Seed/password")
+
+# Check if seed is empty and error if so
+if [ -z "$SEED" ]; then
+  echo "Error: Failed to retrieve database access seed from 1Password" >&2
+  exit 1
+fi
+
+echo -n "$SEED/$SALT" | md5sum | head -c 32

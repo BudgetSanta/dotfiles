@@ -1,0 +1,101 @@
+#                       88                                                #
+#                       88                                                #
+#                       88                                                #
+# 888888888  ,adPPYba,  88,dPPYba,    ,adPPYba,  8b,dPPYba,   8b       d8 #
+#      a8P"  I8[    ""  88P'    "8a  a8P_____88  88P'   `"8a  `8b     d8' #
+#   ,d8P'     `"Y8ba,   88       88  8PP"""""""  88       88   `8b   d8'  #
+# ,d8"       aa    ]8I  88       88  "8b,   ,aa  88       88    `8b,d8'   #
+# 888888888  `"YbbdP"'  88       88   `"Ybbd8"'  88       88      "8"     #
+
+# every shell environment config
+
+
+# eval-cache — drop-in replacement for `eval "$(cmd args)"` that caches the
+# command's stdout to disk and re-sources it on every shell start. Saves the
+# cost of re-forking the underlying binary (often 50-150ms each).
+#
+# How it works:
+#   1. Resolves the binary's path (accepts a name on PATH or an absolute path).
+#   2. Computes a cache file: ~/.cache/zsh-eval-cache/<basename>_<args>.zsh
+#   3. Regenerates the cache if missing OR if the binary's mtime is newer
+#      than the cache (so `brew upgrade <tool>` automatically invalidates).
+#   4. Sources the cache.
+#
+# When to use:
+#   - The output is deterministic per binary version (same input → same output).
+#   - The cost you're avoiding is a fork + the tool's internal init work.
+#   - Examples: `brew shellenv`, `starship init zsh`, `mise activate zsh`,
+#     `zoxide init zsh`, `direnv hook zsh`, `pyenv init -`, `rbenv init -`.
+#
+# When NOT to use:
+#   - Output depends on cwd, time, env vars, or anything that varies per shell.
+#   - You're sourcing a static file (`source ~/.cargo/env`) — already cheap.
+#
+# Usage:
+#   eval-cache brew shellenv
+#   eval-cache /opt/homebrew/bin/brew shellenv   # absolute path required when
+#                                                # the binary isn't on PATH yet
+#
+# Cache lives at ~/.cache/zsh-eval-cache/. Safe to `rm -rf` to force regen.
+eval-cache() {
+  local cmd=$1 cmd_path
+  if [[ $cmd == /* ]]; then
+    cmd_path=$cmd
+  else
+    cmd_path=${commands[$cmd]}
+  fi
+  [[ -x $cmd_path ]] || { print -u2 "eval-cache: '$cmd' not found"; return 127 }
+  shift
+
+  local key="${cmd:t}_${(j:_:)@}"
+  key=${key//[^A-Za-z0-9_-]/_}
+  local cache="$HOME/.cache/zsh-eval-cache/${key}.zsh"
+
+  if [[ ! -s $cache || $cmd_path -nt $cache ]]; then
+    mkdir -p ${cache:h}
+    $cmd_path "$@" > $cache || { rm -f $cache; return 1 }
+  fi
+  source $cache
+}
+
+# Rust Configuration
+source "$HOME/.cargo/env"
+
+# Homebrew (absolute path: brew isn't on PATH until shellenv runs)
+eval-cache /opt/homebrew/bin/brew shellenv
+
+# mise (tool version manager — replaces nvm)
+# Lives in .zshenv (not .zshrc) so non-interactive scripts (cron, launchctl,
+# Alfred workflows, makefiles) can also find mise-managed binaries.
+# Using --shims for fast startup. Tradeoffs:
+#   - [env] blocks from .config/mise.toml DO NOT apply (e.g. node_modules/.bin
+#     auto-add per the RFC's `_.path = ['{{config_root}}/node_modules/.bin']`)
+#   - No chpwd/precmd hooks — version resolution happens at command time via shims
+#   - Each `node`/`pnpm`/etc invocation has ~5-15ms shim overhead
+# If a project's env vars or `_.path` settings stop working, switch back to
+# `eval-cache mise activate zsh` (drop the --shims) for that scenario.
+eval-cache mise activate --shims zsh
+
+## Vars
+export DOTFILES="$HOME/.dotfiles"
+
+## Development Environment (tokens, dev creds, pyenv shims) — sourced here so
+## scripts (cron, launchctl, etc) get GITHUB_TOKEN and other env vars too.
+test -f ~/.dev && source ~/.dev
+
+## PATH additions — order matters; later entries take precedence.
+
+### Dotnet
+export PATH="$PATH:/Users/jared/.dotnet/tools"
+
+### Linux Brew
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
+export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"
+
+### Personal Tooling
+export PATH="$DOTFILES/bin:$DOTFILES/bin/sc:$DOTFILES/bin/git-hooks:$DOTFILES/bin/helpers:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Golang Exectuables
+export PATH="$HOME/go/bin:$PATH"

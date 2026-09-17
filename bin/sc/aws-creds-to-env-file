@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# export AWS credentials to a temporary file
+aws configure export-credentials --profile development-sc001 --format env >/tmp/aws_creds_temp
+
+# Now we will add the AWS credentials to /tmp/hippo-api.env.json
+while IFS= read -r line; do
+  # Skip empty lines
+  [ -z "$line" ] && continue
+
+  # Extract the key and value
+  if [[ $line =~ ^export[[:space:]]+([^=]+)=(.+)$ ]]; then
+    key="${BASH_REMATCH[1]}"
+    # Remove surrounding quotes if they exist
+    value=$(echo "${BASH_REMATCH[2]}" | sed -E 's/^"(.*)"$/\1/')
+
+    # Update the JSON file using jq
+    # The --arg option safely handles special characters in the value
+    jq --arg k "$key" --arg v "$value" \
+      '. + {($k): $v}' \
+      /tmp/hippo-api.env.json >/tmp/hippo-api.env.json.tmp &&
+      mv /tmp/hippo-api.env.json.tmp /tmp/hippo-api.env.json
+  fi
+done </tmp/aws_creds_temp
+
+# Also remove the AWS_WEB_IDENTITY_TOKEN_FILE key from the JSON file
+jq 'del(.AWS_WEB_IDENTITY_TOKEN_FILE)' /tmp/hippo-api.env.json >/tmp/hippo-api.env.json.tmp
+mv /tmp/hippo-api.env.json.tmp /tmp/hippo-api.env.json
+
+# Clean up temporary file
+rm -f /tmp/aws_creds_temp

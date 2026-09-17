@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Bring in authenticated env vars then open MongoDB Comasss which uses that auth
+if ! is-slate-vpn-connected; then
+  echo "Slate VPN not connected..."
+  exit 1
+fi
+
+aws sso login --profile development-sc001 &&
+  eval $(aws configure export-credentials --profile development-sc001 --format env) &&
+  open "/Applications/MongoDB Compass.app"

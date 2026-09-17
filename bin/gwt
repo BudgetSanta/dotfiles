@@ -1,0 +1,87 @@
+#!/bin/bash
+set -euo pipefail
+
+# Git Worktree selector
+#   Lists all worktrees in the current git repository and allows selection via gum
+#
+# Usage:
+#   cd $(gwt)           # Change to selected worktree
+#   gwt                 # Just print the selected worktree path
+#
+# Shell function wrapper (add to ~/.bashrc or ~/.zshrc):
+#   gwt() { cd "$( ~/.dotfiles/bin/gwt )"; }
+
+# Check if gum is available
+if ! command -v gum &> /dev/null; then
+    echo "Error: 'gum' command not found. Please install gum first." >&2
+    exit 1
+fi
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository" >&2
+    exit 1
+fi
+
+# Get list of worktrees with branch info
+# Format: /path/to/worktree [branch] or /path/to/worktree (bare)
+worktrees_with_branches=$(git worktree list --porcelain | awk '
+    /^worktree / { path = substr($0, 10) }
+    /^branch / { branch = substr($0, 8); sub(/.*\//, "", branch) }
+    /^bare$/ { branch = "(bare)" }
+    /^$/ {
+        if (path) {
+            if (branch) {
+                print path " [" branch "]"
+            } else {
+                print path
+            }
+            path = ""
+            branch = ""
+        }
+    }
+    END {
+        if (path) {
+            if (branch) {
+                print path " [" branch "]"
+            } else {
+                print path
+            }
+        }
+    }
+')
+
+# Sort by creation time (most recent first) and create display list
+# Format: "branch:::full_path"
+worktrees_with_paths=$(echo "$worktrees_with_branches" | while IFS= read -r line; do
+    full_path=$(echo "$line" | sed 's/ \[.*\]$//')
+    if [ -d "$full_path" ]; then
+        timestamp=$(stat -f '%B' "$full_path" 2>/dev/null || echo "0")
+        branch=$(echo "$line" | grep -o '\[.*\]' | sed 's/\[//;s/\]//' || echo "")
+        if [ -n "$branch" ]; then
+            echo "$timestamp:::$branch:::$full_path"
+        else
+            # For bare or no branch, use basename
+            basename=$(basename "$full_path")
+            echo "$timestamp:::$basename:::$full_path"
+        fi
+    fi
+done | sort -rn | cut -d':' -f4-)
+
+# Check if we have any worktrees
+if [ -z "$worktrees_with_paths" ]; then
+    echo "Error: No worktrees found" >&2
+    exit 1
+fi
+
+# Create display list (just branch names)
+display_list=$(echo "$worktrees_with_paths" | cut -d':' -f1)
+
+# Let user select a worktree (shows only branch name)
+selected=$(echo "$display_list" | gum filter --placeholder="Select a worktree...")
+
+# Find the full path for the selected branch
+full_path=$(echo "$worktrees_with_paths" | grep "^${selected}:::" | cut -d':' -f4-)
+
+# Output the selected path
+echo "$full_path"

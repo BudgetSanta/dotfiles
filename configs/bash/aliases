@@ -35,6 +35,7 @@ alias todos="git-branch-todos"
 alias yo="ping 1.1.1.1"
 alias ,="ssh"
 alias k="kubectl"
+alias mongo='aws sso login --profile development-sc001 && eval $(aws configure export-credentials --profile development-sc001 --format env) && /Applications/MongoDB\ Compass.app/Contents/MacOS/MongoDB\ Compass &'
 
 #Overwrites
 alias ls='exa --color=auto'
@@ -43,44 +44,13 @@ alias ls='exa --color=auto'
 #  in the same context as execution
 
 mkcd() {
-	test -e "$1" && if ! [[ -d "$1" ]]; then
-  	>&2 echo "File exists and is not a directory"
+  test -e "$1" && if ! [[ -d "$1" ]]; then
+    >&2 echo "File exists and is not a directory"
     return 1
   fi
 
   mkdir -p "$1"
   cd "$1"
-}
-
-# functions to lazy load nvm
-
-
-lazynvm() {
-  unset -f nvm node npm yarn
-  export NVM_DIR=~/.nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-}
-
-nvm() {
-  lazynvm 
-  nvm $@
-}
-
-node() {
-  lazynvm
-  node $@
-}
-
-npm() {
-  lazynvm
-  npm $@
-}
-
-yarn() {
-  lazynvm
-  nvm use
-  which yarn &>/dev/null || npm install --global yarn
-  yarn $@
 }
 
 # better aws

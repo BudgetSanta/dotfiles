@@ -3,5 +3,5 @@
 exe-req 'hyperfine'
 
 hyperfine --warmup 2 \
-    "$SHELL -i -c exit" \
-    "sh -i -c exit"
+    "$SHELL -l -i -c exit" \
+    "sh -l -i -c exit"

@@ -1,46 +1,25 @@
-# ZSHRC
+# @@@@@@@@   @@@@@@   @@@  @@@  @@@@@@@    @@@@@@@ #
+# @@@@@@@@  @@@@@@@   @@@  @@@  @@@@@@@@  @@@@@@@@ #
+#      @@!  !@@       @@!  @@@  @@!  @@@  !@@      #
+#     !@!   !@!       !@!  @!@  !@!  @!@  !@!      #
+#    @!!    !!@@!!    @!@!@!@!  @!@!!@!   !@!      #
+#   !!!      !!@!!!   !!!@!!!!  !!@!@!    !!!      #
+#  !!:           !:!  !!:  !!!  !!: :!!   :!!      #
+# :!:           !:!   :!:  !:!  :!:  !:!  :!:      #
+#  :: ::::  :::: ::   ::   :::  ::   :::   ::: ::: #
+# : :: : :  :: : :     :   : :   :   : :   :: :: : #
 
-## Vars
-export DOTFILES="$HOME/.dotfiles"
-export EDITOR='nvim'
+# interactive-only config
 
-
-## Development Environment
-test -f ~/.dev && source ~/.dev
-export PATH="$PATH:/Users/jared/.dotnet/tools"
-
-
-## Linux Brew
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
-export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"
-
-
-# Starship Prompt
-eval "$(starship init zsh)"
-
-
-## Bat Manpages colour
+## Better man paging
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-## Personal Functions and Aliases
-export PATH="$DOTFILES/bin:$PATH"
-for dir in $(find "$HOME/.dotfiles/bin" -type d); do
-  PATH="$dir:$PATH"
-done
+export EDITOR='nvim'
+
 source $HOME/.aliases
 
+# Interactive Terminal Prompt
+eval-cache starship init zsh
 
-## Fzf and Fd
-export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow'
-export FZF_DEFAULT_OPTS=''
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-### Find File
-alias ff="fzf --preview 'bat -n --color=always {}'"
-
-
-
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-#autoload -Uz compinit && compinit
-#[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
+# Smart directory changing
+eval-cache zoxide init zsh

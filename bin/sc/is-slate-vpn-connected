@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+PROTO_DIR="${HOME}/.config"
+PROTO_FILE="${PROTO_DIR}/health.proto"
+
+if [[ ! -f "$PROTO_FILE" ]]; then
+  cat > "$PROTO_FILE" <<'PROTO'
+syntax = "proto3";
+
+package grpc.health.v1;
+
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}
+
+service Health {
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+}
+PROTO
+fi
+
+grpcurl \
+  -import-path "$PROTO_DIR" \
+  -proto 'health.proto' \
+  hippo-api-eks01.sc001.dev.scinfra.com:443 \
+  grpc.health.v1.Health/Check &>/dev/null
